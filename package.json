@@ -1,0 +1,8 @@
+{
+  "name": "bits-and-bobs",
+  "version": "1.0.0",
+  "description": "authoral code bits and bobs",
+  "main": "index.js",
+  "author": "Ana Tarrisse",
+  "license": "MIT"
+}
