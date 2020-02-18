@@ -8,5 +8,9 @@
   "scripts": {
     "csv-to-object": "node ./src/functions/csv-to-object/index",
     "object-to-css": "node ./src/functions/object-to-css/index"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.1",
+    "typescript": "^3.7.5"
   }
 }
