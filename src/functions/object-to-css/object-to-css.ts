@@ -1,10 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var fs = require("fs");
-var index_1 = __importDefault(require("../write-file/index"));
+const fs = require("fs");
+import writeFile from "../write-file/index";
+
 /**
  * EN: Converts values of different units according to the given proportion
  * PT: Converte o valores entre unidades na sua devida proporção
@@ -22,10 +18,15 @@ var index_1 = __importDefault(require("../write-file/index"));
  * EN: converted value with its unit
  * PT: valor convertido concatenado a sua unidade
  */
-function convertBetweenUnits(value, proportion, newUnit) {
-    var newValue = value / proportion;
-    return "" + newValue + (newUnit ? newUnit : "") + ";";
+function convertBetweenUnits(
+  value: number,
+  proportion: number,
+  newUnit?: string
+): string {
+  const newValue = value / proportion;
+  return `${newValue}${newUnit ? newUnit : ""};`;
 }
+
 /**
  * EN: Handles unit conversion in case it is necessary
  * PT: Lida com a conversão de valores de acordo com as unidades
@@ -41,22 +42,23 @@ function convertBetweenUnits(value, proportion, newUnit) {
  * EN: converted value, with our without unit
  * PT: valor convertido, com ou sem unidade
  */
-function handleUnits(variable) {
-    var unit = variable.replace(/[0-9]/g, "");
-    var value = parseInt(variable.replace(/a-zA-Z/g, ""), 10);
-    switch (unit) {
-        case "px":
-            // EN: converts pixels into rems in 1 to 10 proportion
-            // PT: converte pixels em rems mna proporção de 1 pra 10
-            return convertBetweenUnits(value, 10, "rem");
-        case "%":
-            return convertBetweenUnits(value, 100);
-        case "ms":
-            return convertBetweenUnits(value, 100, "s");
-        default:
-            return variable;
-    }
+function handleUnits(variable: string) {
+  const unit = variable.replace(/[0-9]/g, "");
+  const value = parseInt(variable.replace(/a-zA-Z/g, ""), 10);
+  switch (unit) {
+    case "px":
+      // EN: converts pixels into rems in 1 to 10 proportion
+      // PT: converte pixels em rems mna proporção de 1 pra 10
+      return convertBetweenUnits(value, 10, "rem");
+    case "%":
+      return convertBetweenUnits(value, 100);
+    case "ms":
+      return convertBetweenUnits(value, 100, "s");
+    default:
+      return variable;
+  }
 }
+
 /**
  * EN: Converts an object into a string array that represents the CSS variables.
  *     All object keys are concatenated, separated by a hyphen (-), as in a breadcrumb.
@@ -78,40 +80,52 @@ function handleUnits(variable) {
  * PT: opcional, prefixo adicionado ao início da concatenação
  * @returns
  */
-function createVariables(obj, prefix) {
-    return (Object.entries(obj)
-        .map(function (_a) {
-        var key = _a[0], value = _a[1];
-        if (value === null)
-            return;
+function createVariables(obj: any, prefix?: string) {
+  return (
+    Object.entries(obj)
+      .map(([key, value]) => {
+        if (value === null) return;
+
         // EN: if `value` is an object, parse it recursively
         // PT: se `value` for um objeto, parsear recursivamente
         if (typeof value === "object") {
-            var newPrefix = prefix ? prefix + "-" + key : key;
-            return createVariables(value, newPrefix);
+          const newPrefix = prefix ? `${prefix}-${key}` : key;
+          return createVariables(value, newPrefix);
         }
+
         // EN: if `value` is a string, go through unit handling
         // PT: se `value` for uma string, passá-lo pela função de conversão de unidades
         if (typeof value == "string") {
-            value = handleUnits(value);
+          value = handleUnits(value);
         }
+
         // EN: build the css variable string and converts it to lowercase
         // PT: monta a string da variável de CSS e converte para caixa baixa
-        var cssVariable = ("-" + (prefix ? "-" + prefix + "-" : "-") + key + ": " + value + ";\n").toLowerCase();
+        const cssVariable = `-${
+          prefix ? `-${prefix}-` : "-"
+        }${key}: ${value};\n`.toLowerCase();
         return cssVariable;
-    })
-        // join avoids the inclusion of a comma character by `map` function
-        // `join` evita que a função `map` inclua um caracter de vírgula
-        .join(""));
+      })
+      // join avoids the inclusion of a comma character by `map` function
+      // `join` evita que a função `map` inclua um caracter de vírgula
+      .join("")
+  );
 }
+
 /**
  * EN: mounts the string that will be written in the file
  * PT: monta a string que será escrita no arquivo
  * @param {String} variables
  */
-function getFileContent(variables) {
-    return "\n/* THIS IS AN AUTO GENERATED FILE */\n/* PLEASE DO NOT EDIT THIS DIRECTLY */\n\n:root {\n" + variables + "}";
+function getFileContent(variables: string) {
+  return `
+/* THIS IS AN AUTO GENERATED FILE */
+/* PLEASE DO NOT EDIT THIS DIRECTLY */
+
+:root {
+${variables}}`;
 }
+
 /**
  * EN: Creates the CSS file with the variables in the designated folder
  * PT: Cria o arquivo das variáveis de CSS na pasta de styles
@@ -123,10 +137,11 @@ function getFileContent(variables) {
  * EN: filename of the file to be created
  * PT: nome do arquivo a ser criado
  */
-function objectToCSS(data, outputFile) {
-    var variables = data.map(function (obj) { return createVariables(obj); }).join("");
-    var content = getFileContent(variables);
-    var outputPath = __dirname + "/" + outputFile;
-    index_1.default(outputPath, content);
+function objectToCSS(data: object[], outputFile: string) {
+  const variables = data.map(obj => createVariables(obj)).join("");
+  const content = getFileContent(variables);
+  const outputPath = `${__dirname}/${outputFile}`;
+  writeFile(outputPath, content);
 }
-exports.default = objectToCSS;
+
+export default objectToCSS;
