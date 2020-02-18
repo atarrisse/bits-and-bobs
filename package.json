@@ -1,5 +1,5 @@
 {
-  "name": "bits-and-bobs",
+  "name": "@atarrisse/bits-and-bobs",
   "version": "1.0.0",
   "description": "authoral code bits and bobs",
   "main": "index.js",
@@ -12,5 +12,14 @@
   "devDependencies": {
     "@types/node": "^13.7.1",
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atarrisse/bits-and-bobs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/atarrisse/bits-and-bobs/issues"
+  },
+  "homepage": "https://github.com/atarrisse/bits-and-bobs#readme"
 }
