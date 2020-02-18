@@ -6,11 +6,7 @@
   "author": "Ana Tarrisse",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html",
+    "csv-to-object": "node ./src/functions/csv-to-object/index",
     "object-to-css": "node ./src/functions/object-to-css/index"
-  },
-  "devDependencies": {
-    "parcel-bundler": "^1.12.4"
   }
 }
